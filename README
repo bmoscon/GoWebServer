@@ -1,0 +1,9 @@
+Very Simple Go Web Server
+
+you can build like so:
+
+go build go_web_server.go
+
+run, and then go to "localhost:8080/" + whatever path you want. 
+
+Webserver will display simple message in HTML page
