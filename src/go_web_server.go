@@ -45,18 +45,22 @@ import (
     "net/http"
 )
 
-func printHeader(w http.ResponseWriter) {
-    fmt.Fprint(w, "<html><head><title>Title</title></head><body>")
+func printHeader(w http.ResponseWriter, s string) {
+    fmt.Fprintf(w, "<html>\n<head>\n<title> %s </title>\n</head>\n<body>\n", s)
 }
 
 func printFooter(w http.ResponseWriter) {
-    fmt.Fprint(w, "</body></html>")
+    fmt.Fprint(w, "\n</body></html>\n")
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    printHeader(w)
+    printHeader(w, "Hello")
     fmt.Fprintf(w, "You have reached %s. This page is under construction", r.URL.Path[0:])
     printFooter(w)
+}
+
+func errorHandler(w http.ResponseWriter) {
+     fmt.Fprint(w, "The page you requested was not found. If you feel this is an error, please contact the website admistrator")
 }
 
 func main() {
