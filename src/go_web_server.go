@@ -52,7 +52,7 @@ var root string
 var error_page []byte
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    page, err := ioutil.ReadFile(root + r.URL.Path[0:])
+    page, err := ioutil.ReadFile(root + r.URL.Path)
     if err != nil {
         fmt.Fprintf(w, "%s", error_page)
         return
