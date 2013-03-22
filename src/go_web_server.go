@@ -42,28 +42,59 @@ package main
 
 import (
     "fmt"
+    "os"
+    "strings"
     "net/http"
+    "io/ioutil"
 )
 
-func printHeader(w http.ResponseWriter, s string) {
-    fmt.Fprintf(w, "<html>\n<head>\n<title> %s </title>\n</head>\n<body>\n", s)
-}
-
-func printFooter(w http.ResponseWriter) {
-    fmt.Fprint(w, "\n</body></html>\n")
-}
+var root string
+var error_page []byte
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    printHeader(w, "Hello")
-    fmt.Fprintf(w, "You have reached %s. This page is under construction", r.URL.Path[0:])
-    printFooter(w)
+    page, err := ioutil.ReadFile(root + r.URL.Path[0:])
+    if err != nil {
+        fmt.Fprintf(w, "%s", error_page)
+        return
+    }    
+    fmt.Fprintf(w, "%s", page)
 }
 
-func errorHandler(w http.ResponseWriter) {
-     fmt.Fprint(w, "The page you requested was not found. If you feel this is an error, please contact the website admistrator")
+func loadConfig() {
+    var error_path string
+
+    data, err := ioutil.ReadFile("cfg/gws.cfg")
+    if err != nil {
+        fmt.Println("Error reading config!")
+        os.Exit(1) 
+    }
+
+    lines := strings.Split(string(data), "\n")
+    
+    for i := 0; i < len(lines); i++ {
+        split := strings.Split(lines[i], "=")
+        
+        if strings.Contains(lines[i], "root") {
+            root = split[1] 
+        } else if strings.Contains(lines[i], "error") {
+            error_path = split[1]
+        }
+    }
+
+    if len(error_path) == 0 || len(root) == 0 {
+       fmt.Println("Invalid config!")
+       os.Exit(1) 
+    }
+
+    error_page, err = ioutil.ReadFile("cfg/" + error_path)
+    if err != nil {
+        fmt.Println("Invalid error page filename!")
+        os.Exit(1) 
+    }
 }
 
 func main() {
+    loadConfig()
     http.HandleFunc("/", handler)
     http.ListenAndServe(":8080", nil)
 }

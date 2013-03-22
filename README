@@ -7,3 +7,11 @@ go build go_web_server.go
 run, and then go to "localhost:8080/" + whatever path you want. 
 
 Webserver will display simple message in HTML page
+
+Config file will need to be created. GWS expects to find it in cfg/gws.cfg
+format is as follows:
+root=<path to website root>
+error=<file that will be output in event of a bad request, should be in cfg/>
+
+
+
